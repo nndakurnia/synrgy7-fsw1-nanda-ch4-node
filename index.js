@@ -1,9 +1,14 @@
-const { volumeKubus, luasPermukaanKubus } = require("./kubus");
-const { volumeBalok, luasPermukaanBalok } = require("./balok");
-const { volumePrisma, luasPermukaanPrisma } = require("./prisma");
+const { volumeKubus, luasPermukaanKubus } = require("./bangun-ruang/kubus");
+const { volumeBalok, luasPermukaanBalok } = require("./bangun-ruang/balok");
+const { volumePrisma, luasPermukaanPrisma } = require("./bangun-ruang/prisma");
 
 const fs = require("fs");
-const { setInitialData, getData, getDetail } = require("./people");
+const {
+  setInitialData,
+  getData,
+  getDetail,
+  addData,
+} = require("./filesystem/people");
 
 console.log(volumeKubus(3));
 console.log(luasPermukaanKubus(3));
@@ -13,8 +18,16 @@ console.log(luasPermukaanBalok(6, 4, 3));
 console.log(volumePrisma(6, 4, 10));
 console.log(luasPermukaanPrisma(6, 4, 10));
 
-fs.writeFileSync("./result.txt", `${vBalok}`, "utf-8");
+fs.writeFileSync("./filesystem/result.txt", `${vBalok}`, "utf-8");
 
 setInitialData();
 getData();
 getDetail(1);
+
+const newData = {
+  id: 11,
+  name: "Joshua Hong",
+  username: "joshu_acoustic",
+  email: "joshuji@pledis17.com",
+};
+addData(newData);

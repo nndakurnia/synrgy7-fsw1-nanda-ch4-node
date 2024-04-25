@@ -64,24 +64,28 @@ const data = [
 ];
 
 const setInitialData = () => {
-  fs.writeFile("./people.txt", JSON.stringify(data), "utf-8", (err) => {
+  fs.writeFile("./filesystem/people.txt", JSON.stringify(data), "utf-8", (err) => {
     if (err) console.log("Error saving data!");
     else console.log("Success saving data!");
   });
 };
 
 const getData = () => {
-  fs.readFile("./people.txt", "utf-8", (err, data) => {
+  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+    if (err) console.log("Error reading data!");
+
     const parsed = JSON.parse(data);
-    const names = parsed.map((person) => person.name);
+    const names = parsed.map((row) => row.name);
     console.log(names);
   });
 };
 
 const getDetail = (id) => {
-  fs.readFile("./people.txt", "utf-8", (err, data) => {
+  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+    if (err) console.log("Error reading data!");
+
     const parsed = JSON.parse(data);
-    const person = parsed.find((item) => item.id === id);
+    const person = parsed.find((row) => row.id === id);
 
     if (person) {
       console.log(person);
@@ -91,8 +95,23 @@ const getDetail = (id) => {
   });
 };
 
+const addData = (payload) => {
+  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+    if (err) console.log("Error reading data!");
+
+    const parsedData = JSON.parse(data);
+    parsedData.push(payload);
+    
+    fs.writeFile("./filesystem/people.txt", JSON.stringify(parsedData), "utf-8", (err) => {
+      if (err) console.log("Error saving data!");
+      else console.log(parsedData);
+    });
+  });
+};
+
 module.exports = {
   setInitialData,
   getData,
   getDetail,
+  addData,
 };
