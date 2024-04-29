@@ -64,48 +64,85 @@ const data = [
 ];
 
 const setInitialData = () => {
-  fs.writeFile("./filesystem/people.txt", JSON.stringify(data), "utf-8", (err) => {
+  fs.writeFile("./people.txt", JSON.stringify(data), "utf-8", (err) => {
     if (err) console.log("Error saving data!");
     else console.log("Success saving data!");
   });
 };
 
-const getData = () => {
-  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+const getData = (req, res) => {
+  fs.readFile("./people.txt", "utf-8", (err, data) => {
     if (err) console.log("Error reading data!");
 
-    const parsed = JSON.parse(data);
-    const names = parsed.map((row) => row.name);
-    console.log(names);
+    res.end(data);
   });
 };
 
-const getDetail = (id) => {
-  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+const getDetail = (req, res, id) => {
+  fs.readFile("./people.txt", "utf-8", (err, data) => {
     if (err) console.log("Error reading data!");
 
     const parsed = JSON.parse(data);
     const person = parsed.find((row) => row.id === id);
 
     if (person) {
-      console.log(person);
+      res.end(JSON.stringify(person));
     } else {
-      console.log("Person not found");
+      res.writeHead(404).end("Person not found");
+    }
+  });
+};
+
+const getDetailByUsn = (req, res, username) => {
+  fs.readFile("./people.txt", "utf-8", (err, data) => {
+    if (err) console.log("Error reading data!");
+
+    const parsed = JSON.parse(data);
+    const fileredPeople = parsed.filter((row) => row.username.toLowerCase().includes(username.toLowerCase()))
+
+    if (fileredPeople) {
+      res.end(JSON.stringify(fileredPeople));
+    } else {
+      res.writeHead(404).end("Person not found");
     }
   });
 };
 
 const addData = (payload) => {
-  fs.readFile("./filesystem/people.txt", "utf-8", (err, data) => {
+  fs.readFile("./people.txt", "utf-8", (err, data) => {
     if (err) console.log("Error reading data!");
 
     const parsedData = JSON.parse(data);
     parsedData.push(payload);
     
-    fs.writeFile("./filesystem/people.txt", JSON.stringify(parsedData), "utf-8", (err) => {
+    fs.writeFile("./people.txt", JSON.stringify(parsedData), "utf-8", (err) => {
       if (err) console.log("Error saving data!");
       else console.log(parsedData);
     });
+  });
+};
+
+const deleteById = (req, res, id) => {
+  fs.readFile("./people.txt", "utf-8", (err, data) => {
+    if (err) console.log("Error reading data!");
+
+    const parsedData = JSON.parse(data);
+    const index = parsedData.findIndex((row) => row.id === id);
+
+    if (index !== -1) {
+      parsedData.splice(index, 1);
+
+      fs.writeFile("./people.txt", JSON.stringify(parsedData), "utf-8", (err) => {
+        if (err) {
+          console.log("Error saving data!");
+          res.writeHead(500).end("Internal Server Error");
+          return;
+        }
+        else res.end("Data deleted successfully");;
+      });
+    } else {
+      res.writeHead(404).end("Person not found");
+    }
   });
 };
 
@@ -114,5 +151,7 @@ module.exports = {
   setInitialData,
   getData,
   getDetail,
+  getDetailByUsn,
   addData,
+  deleteById
 };
